@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jdbc
+       http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--datasource-->
+    <jdbc:embedded-database type="H2" id="dataSource">
+        <!--script schema-->
+        <jdbc:script location="classpath:/META-INF/db/schema.sql" />
+    </jdbc:embedded-database>
+
+    <!--enable transaction annotation-->
+    <tx:annotation-driven />
+
+    <!--Jpa transaction manager-->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
+        p:entityManagerFactory-ref="entityManagerFactory"/>
+
+    <!--EntityManagerFactory-->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="packagesToScan" value="com.siwoo.application.domain" />
+        <property name="dataSource" ref="dataSource" />
+        <property name="jpaProperties" ref="jpaProperties" />
+        <property name="jpaVendorAdapter" >
+            <!--Hibernate Jpa Adapter-->
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+        </property>
+    </bean>
+
+    <!--jpa configuration-->
+    <util:properties id="jpaProperties">
+            <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+            <prop key="hibernate.max_fetch_depth">3</prop>
+            <prop key="hibernate.jdbc.fetch_size">50</prop>
+            <prop key="hibernate.jdbc.batch_size">10</prop>
+            <prop key="hibernate.show_sql">true</prop>
+    </util:properties>
+
+</beans>
