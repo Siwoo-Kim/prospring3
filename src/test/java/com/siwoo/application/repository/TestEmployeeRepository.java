@@ -4,6 +4,7 @@ import com.siwoo.application.config.JpaConfig;
 import com.siwoo.application.domain.Card;
 import com.siwoo.application.domain.Employee;
 import com.siwoo.application.domain.EmployeeSummary;
+import com.siwoo.application.domain.Employee_;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -128,12 +129,41 @@ public class TestEmployeeRepository {
 
     @Test(expected = NoResultException.class)
     public void testRemove(){
-
-
         Employee foundEmp = employeeRepository.findById(fixture_employees.get(0).getId());
         employeeRepository.delete(foundEmp);
         assertNull( employeeRepository.findById(fixture_employees.get(0).getId()) );
+    }
 
+    @Test
+    public void testFindCriteriaQuery(){
+        Employee foundEmp = employeeRepository.findById(fixture_employees.get(0).getId());
+        String firstName = foundEmp.getFirstName();
+        String lastName = foundEmp.getLastName();
+
+        List<Employee> employees = employeeRepository.findByCriteriaQuery(firstName,lastName);
+        employees.stream().forEach(employee -> {
+            assertEquals(employee.getFirstName(),firstName);
+            assertEquals(employee.getLastName(),lastName);
+            log.info(employee.toString());
+        });
+    }
+
+    @Autowired CardRepository cardRepository;
+
+    @Test
+    public void testFindByPoint(){
+
+        Card card = new Card();
+        card.setPoint(10.0);
+        card.setIssueDate(LocalDate.now());
+        cardRepository.save(card);
+
+        List<Card> foundCard = cardRepository.findByPoint(card.getPoint());
+
+        assertNotNull(foundCard);
+        assertEquals(foundCard.size(),2);
+
+        listEntities.accept(foundCard);
     }
 }
 

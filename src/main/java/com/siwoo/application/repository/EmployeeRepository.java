@@ -27,6 +27,7 @@ public interface EmployeeRepository {
 
     /**
      * Find by id singer.
+     *
      * @param id of employee*
      * @return the singer
      */
@@ -56,4 +57,13 @@ public interface EmployeeRepository {
      */
     List<Employee> findAllByNativeQuery();
 
+
+    /**
+     * Find by criteria query list.
+     *
+     * @param firstName the first name
+     * @param lastName  the last name
+     * @return the list
+     */
+    List<Employee> findByCriteriaQuery(String firstName, String lastName);
 }
